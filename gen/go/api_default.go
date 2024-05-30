@@ -11,8 +11,6 @@ package openapi
 
 import (
 	"github.com/gin-gonic/gin"
-
-	"github.com/oz10/japanese-food-nutrient-api/go"
 )
 
 type DefaultAPI struct {

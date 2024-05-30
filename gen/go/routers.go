@@ -71,13 +71,13 @@ func getRoutes(handleFunctions ApiHandleFunctions) []Route {
 		{
 			"V1FoodFoodIdGet",
 			http.MethodGet,
-			"/v1/v1/food/:food_id",
+			"/v1/food/:food_id",
 			handleFunctions.DefaultAPI.V1FoodFoodIdGet,
 		},
 		{
 			"V1FoodsSearchGet",
 			http.MethodGet,
-			"/v1/v1/foods/search",
+			"/v1/foods/search",
 			handleFunctions.DefaultAPI.V1FoodsSearchGet,
 		},
 	}
