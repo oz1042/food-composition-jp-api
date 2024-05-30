@@ -1,0 +1,214 @@
+openapi: 3.0.0
+info:
+  description: API to access nutrient information of Japanese food ingredients
+  title: Japanese Food Nutrient API
+  version: "1.0"
+servers:
+- description: Production server
+  url: https://api.example.com/v1
+paths:
+  /v1/foods/search:
+    get:
+      description: Search for food items based on a query and/or specific nutrient
+        contents.
+      parameters:
+      - description: Search query for food items
+        explode: true
+        in: query
+        name: query
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Optional. The nutrient name or ID to search for. Use in combination
+          with minAmount and maxAmount for nutrient-based filtering.
+        explode: true
+        in: query
+        name: nutrient
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Optional. The minimum amount of the nutrient specified by 'nutrient'
+          parameter.
+        explode: true
+        in: query
+        name: minAmount
+        required: false
+        schema:
+          type: number
+        style: form
+      - description: Optional. The maximum amount of the nutrient specified by 'nutrient'
+          parameter.
+        explode: true
+        in: query
+        name: maxAmount
+        required: false
+        schema:
+          type: number
+        style: form
+      - description: "Optional. The unit of measurement for the nutrient amounts,\
+          \ required if nutrient filtering is used."
+        explode: true
+        in: query
+        name: unit
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Optional. Maximum number of results to return for the current
+          page. Default is 50.
+        example: 25
+        explode: true
+        in: query
+        name: pageSize
+        required: false
+        schema:
+          maximum: 200
+          minimum: 1
+          type: integer
+        style: form
+      - description: Optional. Page number to retrieve. The offset into the overall
+          result set is expressed as (pageNumber * pageSize).
+        explode: true
+        in: query
+        name: pageNumber
+        required: false
+        schema:
+          example: 2
+          type: integer
+        style: form
+      - description: "Optional. Specify 'full' for detailed information, defaults\
+          \ to 'basic' which includes minimal data."
+        explode: true
+        in: query
+        name: detail
+        required: false
+        schema:
+          enum:
+          - basic
+          - full
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_v1_foods_search_get_200_response'
+          description: A JSON array of food items
+        "400":
+          description: Invalid request parameters
+      summary: Search food items
+  /v1/food/{food_id}:
+    get:
+      description: Retrieves detailed information about a specific food item by its
+        ID.
+      parameters:
+      - description: Unique identifier for the food item
+        explode: false
+        in: path
+        name: food_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: "Optional. Specify 'full' for detailed information, defaults\
+          \ to 'basic' which includes minimal data."
+        explode: true
+        in: query
+        name: detail
+        required: false
+        schema:
+          enum:
+          - basic
+          - full
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FoodItemDetails'
+          description: Detailed information about the food item
+        "404":
+          description: Food item not found
+      summary: Get food item details
+components:
+  schemas:
+    FoodItem:
+      example:
+        name: name
+        id: id
+        category: category
+      properties:
+        id:
+          description: Unique identifier of the food item
+          type: string
+        name:
+          description: Name of the food item
+          type: string
+        category:
+          description: Category of the food item
+          type: string
+      type: object
+    FoodItemDetails:
+      example:
+        name: name
+        id: id
+        category: category
+        nutrients:
+        - amount: 0.8008281904610115
+          unit: unit
+          name: name
+        - amount: 0.8008281904610115
+          unit: unit
+          name: name
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        category:
+          type: string
+        nutrients:
+          items:
+            $ref: '#/components/schemas/NutrientInformation'
+          type: array
+      type: object
+    NutrientInformation:
+      example:
+        amount: 0.8008281904610115
+        unit: unit
+        name: name
+      properties:
+        name:
+          description: Name of the nutrient
+          type: string
+        amount:
+          description: Amount of the nutrient per 100g of the food item
+          type: number
+        unit:
+          description: Unit of measurement for the nutrient amount
+          type: string
+      type: object
+    _v1_foods_search_get_200_response:
+      example:
+        count: 0
+        items:
+        - name: name
+          id: id
+          category: category
+        - name: name
+          id: id
+          category: category
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/FoodItem'
+          type: array
+        count:
+          description: Total number of food items found
+          type: integer
+      type: object
